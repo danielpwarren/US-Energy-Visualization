@@ -1,9 +1,6 @@
 <script>
+  import Choropleth from "./components/Choropleth.svelte";
+  import data from "./assets/data.json";
 </script>
 
-<main>
-  <h1>testing</h1>
-</main>
-
-<style>
-</style>
+<Choropleth {data} />
