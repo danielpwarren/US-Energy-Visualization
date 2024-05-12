@@ -1,17 +1,23 @@
 <script>
-  // receive color scale as prop.
-  export let colorScale;
-
-  // determine thresholds to display.
-  let thresholds = colorScale.thresholds();
-
-  // add 0 to thresholds to show color
-  // that encodes the lowest bucket.
-  thresholds.unshift(0);
+  export let usTotalRenewablePercentage;
 </script>
 
-<g class="legend">
-  <!-- Add the title of the legend. -->
+<svg width="1000" height="100">
+  <defs>
+    <linearGradient id="energyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:green; stop-opacity:1" />
+      <stop
+        offset={usTotalRenewablePercentage + "%"}
+        style="stop-color:green; stop-opacity:1"
+      />
+      <stop
+        offset={usTotalRenewablePercentage + "%"}
+        style="stop-color:red; stop-opacity:1"
+      />
+      <stop offset="100%" style="stop-color:red; stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
   <text
     class="legend-title"
     fill="currentColor"
@@ -19,44 +25,30 @@
     x="610"
     y="20"
   >
-    Unemployment rate (%)
+    Total U.S. Energy Mix
   </text>
 
-  <!-- Loop through each of the thresholds. -->
-  {#each thresholds as tick, i}
-    {@const xPosition = 610 + i * 30}
-    {@const yPosition = 30}
+  <rect fill="url(#energyGradient)" x="610" y="30" height="10" width="270" />
 
-    <!-- Add a square for each threshold in its respective color. -->
-    <rect
-      fill={colorScale(tick)}
-      x={xPosition}
-      y={yPosition}
-      height="10"
-      width="30"
-    />
+  <line
+    x1={610 + 2.7 * usTotalRenewablePercentage}
+    y1="30"
+    x2={610 + 2.7 * usTotalRenewablePercentage}
+    y2="50"
+    stroke="white"
+    stroke-width="1"
+  />
 
-    <!-- Skip the first threshold, but for the rest... -->
-    {#if i !== 0}
-      <!-- ...add a vertical tick line, -->
-      <line
-        stroke="currentColor"
-        x1={xPosition}
-        x2={xPosition}
-        y1={yPosition}
-        y2={yPosition + 20}
-      />
+  <text
+    fill="currentColor"
+    x={600 + 2.7 * usTotalRenewablePercentage}
+    y="60"
+    text-anchor="end"
+  >
+    {usTotalRenewablePercentage.toFixed(0)}%
+  </text>
 
-      <!-- ...and a tick label. -->
-      <text
-        fill="currentColor"
-        text-anchor="middle"
-        dominant-baseline="middle"
-        x={xPosition}
-        y={yPosition + 30}
-      >
-        {tick}
-      </text>
-    {/if}
-  {/each}
-</g>
+  <text fill="currentColor" x={620 + 2.7 * usTotalRenewablePercentage} y="60">
+    {(100 - usTotalRenewablePercentage).toFixed(0)}%
+  </text>
+</svg>
