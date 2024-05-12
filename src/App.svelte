@@ -7,12 +7,10 @@
   let isAnimating = false;
   let animationInterval;
 
-  // Assuming your data spans multiple years and months
-  const totalMonths = data.length; // Each record is a month
+  const totalMonths = data.length;
 
   function handleScrollChange(event) {
     currentMonthIndex = parseInt(event.target.value);
-    // You can also update other components or trigger animations here
   }
 
   function toggleAnimation() {
@@ -34,20 +32,21 @@
     handleScrollChange({ target: { value: currentMonthIndex } });
   });
 </script>
-
+<div>
+  <p>{new Date(data[currentMonthIndex].Year, data[currentMonthIndex].Month - 1).toLocaleString('default', { month: 'long' })}, {data[currentMonthIndex].Year}</p>
+  <button on:click={toggleAnimation}>
+    {#if isAnimating}
+      Stop Animation
+    {:else}
+      Start Animation
+    {/if}
+  </button>
+  <input
+    type="range"
+    min="0"
+    max={totalMonths - 1}
+    value={currentMonthIndex}
+    on:input={handleScrollChange}
+  />
+</div>
 <Choropleth data={data[currentMonthIndex].Data} />
-
-<button on:click={toggleAnimation}>
-  {#if isAnimating}
-    Stop Animation
-  {:else}
-    Start Animation
-  {/if}
-</button>
-<input
-  type="range"
-  min="0"
-  max={totalMonths - 1}
-  value={currentMonthIndex}
-  on:input={handleScrollChange}
-/>
