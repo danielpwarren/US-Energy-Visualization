@@ -37,7 +37,8 @@
   ];
 
   let energyMap, usTotalRenewablePercentage;
-
+  
+  let currentHoveredState = null;
   $: {
     const energyPercentages = data.map((d) => {
       const totalEnergy = Object.values(d.EnergyMix).reduce(
@@ -72,22 +73,30 @@
     usTotalRenewablePercentage = energyMap.get("00")
       ? energyMap.get("00").renewable
       : 0;
+
+    if (currentHoveredState && energyMap) {
+      updateTooltip();
+    }
   }
 
   const colorScale = scaleLinear().domain([0, 100]).range(["red", "green"]);
 
   const showTooltip = (event, state) => {
-    const energy = energyMap.get(state.id);
-    const tooltipHtml = `
-        <strong>${state.properties.name}</strong><br>
-        Renewable: ${energy.renewable.toFixed(1)}%<br>
-        Non-Renewable: ${energy.nonRenewable.toFixed(1)}%
-    `;
-    tooltipText.innerHTML = tooltipHtml;
+    currentHoveredState = state;
+    updateTooltip();
     tooltipElement.style.visibility = "visible";
     tooltipElement.style.left = `${event.pageX + 10}px`;
     tooltipElement.style.top = `${event.pageY + 10}px`;
   };
+
+  function updateTooltip() {
+    const energy = energyMap.get(currentHoveredState.id);
+    tooltipText.innerHTML = `
+      <strong>${currentHoveredState.properties.name}</strong><br>
+      Renewable: ${energy.renewable.toFixed(1)}%<br>
+      Non-Renewable: ${energy.nonRenewable.toFixed(1)}%
+    `;
+  }
 
   const hideTooltip = () => {
     tooltipElement.style.visibility = "hidden";

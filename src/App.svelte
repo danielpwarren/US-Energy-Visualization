@@ -7,6 +7,7 @@
   let isAnimating = false;
   let animationInterval;
 
+
   const totalMonths = data.length;
 
   function handleScrollChange(event) {
@@ -31,7 +32,10 @@
   onMount(() => {
     handleScrollChange({ target: { value: currentMonthIndex } });
   });
+    
 </script>
+
+
 <div>
   <p>{new Date(data[currentMonthIndex].Year, data[currentMonthIndex].Month - 1).toLocaleString('default', { month: 'long' })}, {data[currentMonthIndex].Year}</p>
   <button on:click={toggleAnimation}>
