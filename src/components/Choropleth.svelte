@@ -3,7 +3,7 @@
   import { scaleLinear } from "d3-scale";
   import * as topojson from "topojson-client";
   import us from "../assets/us.json";
-  import Legend from "./Legend.svelte";
+  import TotalPowerUsage from "./TotalPowerUsage.svelte";
   import { writable } from 'svelte/store';
 
   export let data;
@@ -40,6 +40,13 @@
   let energyMap, usTotalRenewablePercentage;
   
   let currentHoveredState = null;
+  let shiftPressed = writable(false);
+
+  const colorScale = scaleLinear().domain([0, 100]).range(["red", "green"]);
+
+  $: $shiftPressed, updateTooltip();
+  $: currentHoveredState, updateTooltip();
+  
   $: {
     const energyPercentages = data.map((d) => {
       const totalEnergy = Object.values(d.EnergyMix).reduce(
@@ -116,11 +123,49 @@
       updateTooltip();
     }
   }
-  let shiftPressed = writable(false);
 
-  const colorScale = scaleLinear().domain([0, 100]).range(["red", "green"]);
+  function updateTooltip(shiftKeyActive) {
+    if (currentHoveredState && energyMap.has(currentHoveredState.id)) {
+      const energy = energyMap.get(currentHoveredState.id);
+      let htmlContent = `<strong>${currentHoveredState.properties.name}</strong><br>
+      <div class='stat-container'>`;
+      if ($shiftPressed) {
+        Object.keys(energy).forEach(key => {
+          if (energy[key] > 0 && !['renewable', 'nonRenewable'].includes(key)) {
+            htmlContent += `<div class='energy-stat'>
+                              <span class='label'>${key}</span>
+                              <span class='percent'>${energy[key].toFixed(1)}%</span>
+                            </div>`;
+          }
+        });
+      } else {
+        htmlContent += `
+          <div class='energy-stat'>
+            <span class='label renewable'>Renewable: </span>
+            <span class='percent'>${energy.renewable.toFixed(1)}%</span>
+          </div>
+          <div class='energy-stat'>
+            <span class='label non-renewable'>Non-Renewable:</span>
+            <span class='percent'>${energy.nonRenewable.toFixed(1)}%</span>
+          </div>`;
+      }
+      htmlContent += `</div>`;
+      tooltipText.innerHTML = htmlContent;
+    }
+  }
 
-   window.addEventListener('keydown', (event) => {
+  const showTooltip = (event, state) => {
+    currentHoveredState = state;
+    tooltipElement.style.visibility = "visible";
+    tooltipElement.style.left = `${event.pageX + 10}px`;
+    tooltipElement.style.top = `${event.pageY + 10}px`;
+  };
+
+  const hideTooltip = () => {
+    tooltipElement.style.visibility = "hidden";
+  };
+
+  window.addEventListener('keydown', (event) => {
     if (event.key === 'Shift') {
       shiftPressed.set(true);
     }
@@ -132,51 +177,11 @@
     }
   });
 
-  // Respond to shift key state changes
   shiftPressed.subscribe(isPressed => {
     if (currentHoveredState) {
-      if (isPressed) {
-        const energy = energyMap.get(currentHoveredState.id);
-        tooltipText.innerHTML = `
-          <strong>${currentHoveredState.properties.name}</strong><br>
-          Hydroelectric Conventional: ${energy.HydroelectricConventional.toFixed(1)}%<br>,
-          Wind: ${energy.Wind.toFixed(1)}%<br>,
-          Solar ThermalandPhotovoltaic: ${energy.SolarThermalandPhotovoltaic.toFixed(1)}%<br>,
-          Geothermal: ${energy.Geothermal.toFixed(1)}%<br>,
-          Coal: ${energy.Coal.toFixed(1)}%<br>,
-          Natural Gas: ${energy.NaturalGas.toFixed(1)}%<br>,
-          Petroleum: ${energy.Petroleum.toFixed(1)}%<br>,
-          Other: ${energy.Other.toFixed(1)}%<br>,
-          Other Biomass: ${energy.OtherBiomass.toFixed(1)}%<br>,
-          Other Gases: ${energy.OtherGases.toFixed(1)}%<br>,
-          Wood and Wood Derived Fuels: ${energy.WoodandWoodDerivedFuels.toFixed(1)}%<br>,
-          Nuclear: ${energy.Nuclear.toFixed(1)}%<br>
-        `;} else {
-        updateTooltip();
-      }
+      updateTooltip(isPressed);
     }
   });
-
-  const showTooltip = (event, state) => {
-    currentHoveredState = state;
-    updateTooltip();
-    tooltipElement.style.visibility = "visible";
-    tooltipElement.style.left = `${event.pageX + 10}px`;
-    tooltipElement.style.top = `${event.pageY + 10}px`;
-  };
-
-  function updateTooltip() {
-    const energy = energyMap.get(currentHoveredState.id);
-    tooltipText.innerHTML = `
-      <strong>${currentHoveredState.properties.name}</strong><br>
-      Renewable: ${energy.renewable.toFixed(1)}%<br>
-      Non-Renewable: ${energy.nonRenewable.toFixed(1)}%
-    `;
-  }
-
-  const hideTooltip = () => {
-    tooltipElement.style.visibility = "hidden";
-  };
 </script>
 
 <svg
@@ -211,7 +216,7 @@
     d={path(statemesh)}
   />
 
-  <Legend {usTotalRenewablePercentage} />
+  <TotalPowerUsage {usTotalRenewablePercentage} />
 </svg>
 <div bind:this={tooltipElement} class="tooltip">
   <span bind:this={tooltipText}></span>

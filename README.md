@@ -6,7 +6,7 @@
 
 - Daniel Warren
 - Eric Gu
-- Rukun
+- Rukun Zhang
 
 ---
 
