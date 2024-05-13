@@ -25,7 +25,7 @@
         if (currentMonthIndex === totalMonths - 1) {
           toggleAnimation();
         }
-      }, 100);
+      }, 1000);
     }
   }
 
