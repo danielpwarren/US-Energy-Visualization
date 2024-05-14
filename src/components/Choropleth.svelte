@@ -188,9 +188,21 @@
 
   const showTooltip = (event, state) => {
     currentHoveredState = state;
+    const tooltipRect = tooltipElement.getBoundingClientRect();
+
+    let tooltipX = event.pageX + 10;
+    let tooltipY = event.pageY + 10;
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    if (event.pageY > viewportHeight - 280) {
+      tooltipY = event.pageY - tooltipRect.height - 60;
+    }
+
     tooltipElement.style.visibility = "visible";
-    tooltipElement.style.left = `${event.pageX + 10}px`;
-    tooltipElement.style.top = `${event.pageY + 10}px`;
+    tooltipElement.style.left = `${tooltipX}px`;
+    tooltipElement.style.top = `${tooltipY}px`;
   };
 
   const hideTooltip = () => {
