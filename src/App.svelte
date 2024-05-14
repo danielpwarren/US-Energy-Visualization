@@ -42,7 +42,7 @@
   });
 </script>
 
-<div class="title">Interactive Data Visualization</div>
+<div class="title">US Transition To Green Energy</div>
 <div class="subtitle">
   {new Date(
     data[currentMonthIndex].Year,
