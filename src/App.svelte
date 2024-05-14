@@ -42,35 +42,45 @@
   });
 </script>
 
+<div class="title">Interactive Data Visualization</div>
+<div class="subtitle">
+  {new Date(
+    data[currentMonthIndex].Year,
+    data[currentMonthIndex].Month - 1
+  ).toLocaleString("default", { month: "long" })}, {data[currentMonthIndex]
+    .Year}
+</div>
 <div class="controls">
-  <p>
-    {new Date(
-      data[currentMonthIndex].Year,
-      data[currentMonthIndex].Month - 1
-    ).toLocaleString("default", { month: "long" })}, {data[currentMonthIndex]
-      .Year}
-  </p>
-  <input
-    type="range"
-    min="0"
-    max={totalMonths - 1}
-    value={currentMonthIndex}
-    on:input={handleScrollChange}
-  />
-  Animation Speed:
-  <input
-    type="range"
-    min="50"
-    max="500"
-    value={animationSpeed}
-    on:input={handleSpeedChange}
-  />
-  <button on:click={toggleAnimation}>
-    {#if isAnimating}
-      Stop Animation
-    {:else}
-      Start Animation
-    {/if}
-  </button>
+  <div class="controls-container">
+    <div class="time-selection">
+      Time Selection Slider:<br />
+      <input
+        type="range"
+        min="0"
+        max={totalMonths - 1}
+        value={currentMonthIndex}
+        on:input={handleScrollChange}
+      />
+    </div>
+    <div class="animation-controls">
+      Animation Speed: ({animationSpeed}ms)<br />
+      <input
+        type="range"
+        min="50"
+        max="500"
+        value={animationSpeed}
+        on:input={handleSpeedChange}
+      />
+    </div>
+    <div class="button-section">
+      <button on:click={toggleAnimation}>
+        {#if isAnimating}
+          Stop Animation
+        {:else}
+          Start Animation
+        {/if}
+      </button>
+    </div>
+  </div>
 </div>
 <Choropleth data={data[currentMonthIndex].Data} />

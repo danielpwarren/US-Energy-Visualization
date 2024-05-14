@@ -36,7 +36,7 @@
     x2={610 + 2.7 * usTotalRenewablePercentage}
     y2="50"
     stroke="white"
-    stroke-width="1"
+    stroke-width="2"
   />
 
   <text
