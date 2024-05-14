@@ -54,7 +54,6 @@ body {
 }
 
 .label {
-  color: white;
   margin-right: 10px;
 }
 
@@ -64,4 +63,11 @@ body {
 
 .non-renewable {
   color: #ff0000;
+}
+
+.tooltip-footer {
+  opacity: 0.5;
+  color: white;
+  font-size: small;
+  text-align: center;
 }

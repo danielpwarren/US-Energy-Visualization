@@ -4,7 +4,7 @@
   import * as topojson from "topojson-client";
   import us from "../assets/us.json";
   import TotalPowerUsage from "./TotalPowerUsage.svelte";
-  import { writable } from 'svelte/store';
+  import { writable } from "svelte/store";
 
   export let data;
 
@@ -37,8 +37,29 @@
     "Nuclear",
   ];
 
+  const energySourceInfo = {
+    HydroelectricConventional: {
+      name: "Hydroelectric",
+      renewable: "renewable",
+    },
+    Wind: { name: "Wind Power", renewable: "renewable" },
+    SolarThermalandPhotovoltaic: {
+      name: "Solar Energy",
+      renewable: "renewable",
+    },
+    Geothermal: { name: "Geothermal", renewable: "renewable" },
+    Coal: { name: "Coal", renewable: "non-renewable" },
+    NaturalGas: { name: "Natural Gas", renewable: "non-renewable" },
+    Petroleum: { name: "Petroleum", renewable: "non-renewable" },
+    Other: { name: "Other Sources", renewable: "non-renewable" },
+    OtherBiomass: { name: "Biomass", renewable: "non-renewable" },
+    OtherGases: { name: "Other Gases", renewable: "non-renewable" },
+    WoodandWoodDerivedFuels: { name: "Wood Fuels", renewable: "non-renewable" },
+    Nuclear: { name: "Nuclear Energy", renewable: "non-renewable" },
+  };
+
   let energyMap, usTotalRenewablePercentage;
-  
+
   let currentHoveredState = null;
   let shiftPressed = writable(false);
 
@@ -46,7 +67,7 @@
 
   $: $shiftPressed, updateTooltip();
   $: currentHoveredState, updateTooltip();
-  
+
   $: {
     const energyPercentages = data.map((d) => {
       const totalEnergy = Object.values(d.EnergyMix).reduce(
@@ -61,26 +82,31 @@
         (acc, source) => acc + (d.EnergyMix[source] || 0),
         0
       );
-      const HydroelectricConventional = d.EnergyMix['Hydroelectric Conventional'] || 0;
-      const Wind = d.EnergyMix['Wind'] || 0;
-      const SolarThermalandPhotovoltaic = d.EnergyMix['Solar Thermal and Photovoltaic'] || 0;
-      const Geothermal = d.EnergyMix['Geothermal'] || 0;
-      const Coal = d.EnergyMix['Coal'] || 0;
-      const NaturalGas = d.EnergyMix['Natural Gas'] || 0;
-      const Petroleum = d.EnergyMix['Petroleum'] || 0;
-      const Other = d.EnergyMix['Other'] || 0;
-      const OtherBiomass = d.EnergyMix['Other Biomass'] || 0;
-      const OtherGases = d.EnergyMix['Other Gases'] || 0;
-      const WoodandWoodDerivedFuels = d.EnergyMix['Wood and Wood Derived Fuels'] || 0;
-      const Nuclear = d.EnergyMix['Nuclear'] || 0;
+      const HydroelectricConventional =
+        d.EnergyMix["Hydroelectric Conventional"] || 0;
+      const Wind = d.EnergyMix["Wind"] || 0;
+      const SolarThermalandPhotovoltaic =
+        d.EnergyMix["Solar Thermal and Photovoltaic"] || 0;
+      const Geothermal = d.EnergyMix["Geothermal"] || 0;
+      const Coal = d.EnergyMix["Coal"] || 0;
+      const NaturalGas = d.EnergyMix["Natural Gas"] || 0;
+      const Petroleum = d.EnergyMix["Petroleum"] || 0;
+      const Other = d.EnergyMix["Other"] || 0;
+      const OtherBiomass = d.EnergyMix["Other Biomass"] || 0;
+      const OtherGases = d.EnergyMix["Other Gases"] || 0;
+      const WoodandWoodDerivedFuels =
+        d.EnergyMix["Wood and Wood Derived Fuels"] || 0;
+      const Nuclear = d.EnergyMix["Nuclear"] || 0;
 
       return {
         id: d.id,
         renewablePercentage: (renewableEnergy / totalEnergy) * 100,
         nonRenewablePercentage: (nonRenewableEnergy / totalEnergy) * 100,
-        HydroelectricConventionalPercentage: (HydroelectricConventional / totalEnergy) * 100,
+        HydroelectricConventionalPercentage:
+          (HydroelectricConventional / totalEnergy) * 100,
         WindPercentage: (Wind / totalEnergy) * 100,
-        SolarThermalandPhotovoltaicPercentage: (SolarThermalandPhotovoltaic / totalEnergy) * 100,
+        SolarThermalandPhotovoltaicPercentage:
+          (SolarThermalandPhotovoltaic / totalEnergy) * 100,
         GeothermalPercentage: (Geothermal / totalEnergy) * 100,
         CoalPercentage: (Coal / totalEnergy) * 100,
         NaturalGasPercentage: (NaturalGas / totalEnergy) * 100,
@@ -88,8 +114,9 @@
         OtherPercentage: (Other / totalEnergy) * 100,
         OtherBiomassPercentage: (OtherBiomass / totalEnergy) * 100,
         OtherGasesPercentage: (OtherGases / totalEnergy) * 100,
-        WoodandWoodDerivedFuelsPercentage: (WoodandWoodDerivedFuels / totalEnergy) * 100,
-        NuclearPercentage: (Nuclear / totalEnergy) * 100
+        WoodandWoodDerivedFuelsPercentage:
+          (WoodandWoodDerivedFuels / totalEnergy) * 100,
+        NuclearPercentage: (Nuclear / totalEnergy) * 100,
       };
     });
 
@@ -110,7 +137,7 @@
           OtherBiomass: d.OtherBiomassPercentage,
           OtherGases: d.OtherGasesPercentage,
           WoodandWoodDerivedFuels: d.WoodandWoodDerivedFuelsPercentage,
-          Nuclear: d.NuclearPercentage
+          Nuclear: d.NuclearPercentage,
         },
       ])
     );
@@ -124,17 +151,19 @@
     }
   }
 
-  function updateTooltip(shiftKeyActive) {
+  function updateTooltip() {
     if (currentHoveredState && energyMap.has(currentHoveredState.id)) {
       const energy = energyMap.get(currentHoveredState.id);
       let htmlContent = `<strong>${currentHoveredState.properties.name}</strong><br>
       <div class='stat-container'>`;
       if ($shiftPressed) {
-        Object.keys(energy).forEach(key => {
-          if (energy[key] > 0 && !['renewable', 'nonRenewable'].includes(key)) {
+        Object.keys(energy).forEach((key) => {
+          if (energy[key] > 0 && !["renewable", "nonRenewable"].includes(key)) {
+            const info = energySourceInfo[key];
             htmlContent += `<div class='energy-stat'>
-                              <span class='label'>${key}</span>
+                              <span class='label ${info.renewable}'>${info.name}</span>
                               <span class='percent'>${energy[key].toFixed(1)}%</span>
+                            </div>
                             </div>`;
           }
         });
@@ -147,9 +176,12 @@
           <div class='energy-stat'>
             <span class='label non-renewable'>Non-Renewable:</span>
             <span class='percent'>${energy.nonRenewable.toFixed(1)}%</span>
+          </div>
+          </div>
+          <div class="tooltip-footer tooltip-footer-animate">
+            Hold Shift for more details.
           </div>`;
       }
-      htmlContent += `</div>`;
       tooltipText.innerHTML = htmlContent;
     }
   }
@@ -165,21 +197,21 @@
     tooltipElement.style.visibility = "hidden";
   };
 
-  window.addEventListener('keydown', (event) => {
-    if (event.key === 'Shift') {
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Shift") {
       shiftPressed.set(true);
     }
   });
 
-  window.addEventListener('keyup', (event) => {
-    if (event.key === 'Shift') {
+  window.addEventListener("keyup", (event) => {
+    if (event.key === "Shift") {
       shiftPressed.set(false);
     }
   });
 
-  shiftPressed.subscribe(isPressed => {
+  shiftPressed.subscribe((isPressed) => {
     if (currentHoveredState) {
-      updateTooltip(isPressed);
+      updateTooltip();
     }
   });
 </script>
