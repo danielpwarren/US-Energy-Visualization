@@ -76,7 +76,7 @@ body {
 }
 
 button {
-  padding: 0.25rem 0.5rem;
+  padding: 0.5rem 1rem;
   margin: 1rem, 0;
   font-size: 1rem;
   border: none;
@@ -85,6 +85,25 @@ button {
   color: white;
   cursor: pointer;
   transition: background-color 0.3s ease;
+}
+
+.details-toggle {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  font-size: 1.25rem;
+  text-align: left;
+  display: block;
+  width: auto;
+}
+
+.details-toggle:hover {
+  text-decoration: underline;
+  color: #aaa;
+  background-color: transparent;
 }
 
 button:hover {
@@ -109,6 +128,7 @@ input[type="range"]::-moz-range-thumb {
   grid-template-columns: repeat(3, 1fr);
   align-items: center;
   text-align: center;
+  width: 100%;
 }
 
 .time-selection,
@@ -119,4 +139,25 @@ input[type="range"]::-moz-range-thumb {
 
 .title {
   font-size: 24px;
+}
+
+.details {
+  text-align: left;
+  color: rgba(255, 255, 255, 0.87);
+  padding: 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  max-height: 0;
+  transition: max-height 0.5s ease-in-out;
+  width: 100%;
+}
+
+.details-toggle {
+  align-self: start;
+  justify-self: left;
+}
+
+.details-toggle[aria-expanded="true"] + .details {
+  max-height: 500px;
+  overflow: auto;
 }
